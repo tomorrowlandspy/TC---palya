@@ -1,48 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription Ended</title>
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #000;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Link Generator</title>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+        color: #333;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 25px;
+        color: #333;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eaeaea;
+    }
+    .file-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        background-color: #fafafa;
+    }
+    .file-input-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    .file-label {
+        font-weight: 500;
+        font-size: 16px;
+        color: #333;
+        background: #f0f0f0;
+        padding: 10px 20px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .file-label:hover {
+        background: #e8e8e8;
+    }
+    input[type="file"] {
+        display: none;
+    }
+    .file-name {
+        font-size: 14px;
+        color: #666;
+        background: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        width: 100%;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .button-group {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin: 20px 0;
+        flex-wrap: wrap;
+    }
+    .btn {
+        padding: 10px 20px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s;
+        background: #f8f8f8;
+        color: #333;
+    }
+    .btn:hover {
+        background: #f0f0f0;
+    }
+    .btn:active {
+        transform: translateY(1px);
+    }
+    .btn-primary { 
+        background-color: #007bff; 
+        color: white; 
+        border-color: #007bff;
+    }
+    .btn-primary:hover { 
+        background-color: #0056b3; 
+        border-color: #0056b3;
+    }
+    .btn-success { 
+        background-color: #28a745; 
+        color: white; 
+        border-color: #28a745;
+    }
+    .btn-success:hover { 
+        background-color: #1e7e34; 
+        border-color: #1e7e34;
+    }
+    .btn-warning { 
+        background-color: #ffc107; 
+        color: #333; 
+        border-color: #ffc107;
+    }
+    .btn-warning:hover { 
+        background-color: #e0a800; 
+        border-color: #e0a800;
+    }
+    .btn:disabled { 
+        background-color: #e9ecef; 
+        color: #6c757d;
+        cursor: not-allowed; 
+        border-color: #dee2e6;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        overflow: hidden;
+        background: white;
+    }
+    th, td {
+        border-bottom: 1px solid #dee2e6;
+        padding: 12px;
+        text-align: left;
+        font-size: 14px;
+    }
+    th {
+        background-color: #f8f9fa;
+        color: #333;
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+    }
+    tr:hover {
+        background-color: #f8f9fa;
+    }
+    .copy-btn {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+        transition: background-color 0.2s;
+    }
+    .copy-btn:hover { 
+        background-color: #5a6268; 
+    }
+    .copy-btn.copied {
+        background-color: #28a745 !important;
+        cursor: not-allowed;
+    }
+    .copy-btn:disabled {
+        background-color: #ced4da !important;
+        color: #6c757d;
+        cursor: not-allowed;
+    }
+    /* Hide Survey Model and Generated Link columns visually */
+    th:nth-child(3), td:nth-child(3),
+    th:nth-child(4), td:nth-child(4) {
+        display: none;
+    }
+    .status {
+        text-align: center;
+        margin: 15px 0;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    .status.success { 
+        background-color: #d4edda; 
+        color: #155724; 
+        border-color: #c3e6cb;
+    }
+    .status.error { 
+        background-color: #f8d7da; 
+        color: #721c24; 
+        border-color: #f5c6cb;
+    }
+    .table-container {
+        max-height: 500px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
 
-        .message {
-            font-size: 56px;
-            font-weight: bold;
-            text-align: center;
-            color: #ff3b3b;
-            animation: blinkZoom 1.2s infinite;
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
         }
-
-        @keyframes blinkZoom {
-            0% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.2;
-                transform: scale(1.08);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
+        h1 {
+            font-size: 20px;
         }
-    </style>
+        .file-section {
+            padding: 15px;
+        }
+        .button-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .btn {
+            width: 100%;
+        }
+        table {
+            font-size: 13px;
+        }
+        th, td {
+            padding: 8px;
+        }
+    }
+</style>
 </head>
 <body>
-    <div class="message">
-        YOUR SUBSCRIPTION HAS ENDED<br>
-        CONTACT YOUR ADMIN
+<div class="container">
+    <h1> Peaky Blinders </h1>
+    
+    <div class="file-section">
+        <div class="file-input-container">
+            <label for="fileInput" class="file-label">Choose Excel File</label>
+            <input type="file" id="fileInput" accept=".xlsx, .xls">
+            <div class="file-name" id="fileName">No file chosen</div>
+        </div>
+        <div class="button-group">
+            <button class="btn btn-primary" id="generateBtn" onclick="processFile()" disabled>Generate Links</button>
+            <button class="btn btn-warning" onclick="clearData()">Clear All</button>
+        </div>
     </div>
+    
+    <div id="status" class="status" style="display: none;"></div>
+    
+    <div class="button-group">
+        <button class="btn btn-success" id="copyAllBtn" onclick="copyAllLinks()" disabled>Copy All Links</button>
+        <button class="btn btn-primary" onclick="exportToCSV()" id="exportBtn" disabled>Export to CSV</button>
+    </div>
+    
+    <div class="table-container">
+        <table id="linkTable">
+            <thead>
+                <tr>
+                    <th>Receipt No.</th>
+                    <th>Sales Type</th>
+                    <th>Survey Model</th>
+                    <th>Generated Link</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+let currentData = [];
+const storeID = "91KDIPL724-01"; // Store Code
+
+// Excel date/time converters
+function convertExcelDate(serial) {
+    const date = new Date((serial - 25569) * 86400 * 1000);
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+function convertExcelTime(serial) {
+    const totalMilliseconds = Math.round(serial * 24 * 60 * 60 * 1000);
+    const hours = String(Math.floor(totalMilliseconds / (60 * 60 * 1000))).padStart(2,'0');
+    const minutes = String(Math.floor((totalMilliseconds % (60 * 60 * 1000)) / (60 * 1000))).padStart(2,'0');
+    const seconds = String(Math.floor((totalMilliseconds % (60 * 1000)) / 1000)).padStart(2,'0');
+    const milliseconds = String(totalMilliseconds % 1000).padStart(3,'0');
+    return `${hours}:${minutes}:${seconds}.${milliseconds}`;
+}
+
+// Generate link
+function generateSurveyLink(row) {
+    const receiptNo = row['Receipt No.'];
+    const salesType = row['Sales Type'];
+    let surveyModel = '', orderID = '', numericOT = '';
+
+    if (/^\d+$/.test(receiptNo) && salesType === 'TAKEAWAY') { surveyModel = '6.0'; orderID = receiptNo; numericOT = '2'; }
+    else if (/^\d+$/.test(receiptNo) && salesType === 'DINE-IN') { surveyModel = '6.0'; orderID = receiptNo; numericOT = '1'; }
+    else if (receiptNo.startsWith('K473') && salesType === 'TAKEAWAY') { surveyModel = '4.0'; orderID = receiptNo.slice(-4); numericOT = '2'; }
+    else if (receiptNo.startsWith('K473') && salesType === 'DINE-IN') { surveyModel = '4.0'; orderID = receiptNo.slice(-4); numericOT = '1'; }
+    else if (receiptNo.startsWith('K473') && salesType === 'DELIVERY') { surveyModel = '3.0'; orderID = receiptNo; numericOT = '3'; }
+    else { return null; }
+
+    const date = convertExcelDate(row['Date']);
+    const time = convertExcelTime(row['Time']);
+    const phoneNumber = `91${row['Sell-to Contact No.']}`;
+    const isoDateTime = `${date}T${time}Z`;
+
+    const data = { "S": storeID, "OI": orderID, "D": date, "TM": time, "DTM": isoDateTime, "TI": orderID, "OT": numericOT, "SM": surveyModel, "PH": phoneNumber };
+    const encodedData = btoa(JSON.stringify(data));
+    return `https://customer.kfc-listens.com/jfe/form/SV_8bHC0noyvM3jPWC?Q_EED=${encodedData}`;
+}
+
+// File processing
+function processFile() {
+    const file = document.getElementById('fileInput').files[0];
+    if (!file) return showStatus('Please select a file first', 'error');
+    showStatus('Processing file...', 'success');
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+            const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+            const filteredData = sheetData.filter(row => !(row['POS Receipt No.']||'').match(/K473SWG|K473ZMT|K473MAGIC/));
+
+            currentData = [];
+            const tbody = document.querySelector('#linkTable tbody');
+            tbody.innerHTML = '';
+
+            let processedCount = 0;
+            filteredData.forEach((row, index) => {
+                const link = generateSurveyLink(row);
+                if (link) {
+                    processedCount++;
+                    const linkData = {
+                        receiptNo: row['Receipt No.'],
+                        salesType: row['Sales Type'],
+                        surveyModel: link.includes('SM=6.0') ? '6.0' : link.includes('SM=4.0') ? '4.0' : link.includes('SM=3.0') ? '3.0' : 'Unknown',
+                        link: link,
+                        copied: false
+                    };
+                    currentData.push(linkData);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${linkData.receiptNo}</td>
+                        <td>${linkData.salesType}</td>
+                        <td>${linkData.surveyModel}</td>
+                        <td>${linkData.link}</td>
+                        <td><button class="copy-btn" data-index="${currentData.length - 1}">Copy</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    copyIndividualLink(index, this);
+                });
+            });
+
+            showStatus(`Processed ${processedCount} records`, 'success');
+            document.getElementById('copyAllBtn').disabled = false;
+            document.getElementById('exportBtn').disabled = false;
+        } catch (err) {
+            showStatus('Error: ' + err.message, 'error');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// Copy individual link
+function copyIndividualLink(index, button) {
+    const linkData = currentData[index];
+    
+    if (linkData.copied) {
+        return;
+    }
+    
+    const link = linkData.link;
+    
+    const textArea = document.createElement("textarea");
+    textArea.value = link;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            linkData.copied = true;
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+            button.disabled = true;
+            
+            showStatus('Link copied to clipboard!', 'success');
+        } else {
+            showStatus('Failed to copy link', 'error');
+        }
+    } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+        showStatus('Failed to copy link', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Copy all links
+function copyAllLinks() {
+    const links = currentData.map(item => item.link).join('\n');
+    
+    const textArea = document.createElement("textarea");
+    textArea.value = links;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            currentData.forEach((item, index) => {
+                item.copied = true;
+            });
+            
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                button.disabled = true;
+            });
+            
+            showStatus('All links copied to clipboard!', 'success');
+        } else {
+            showStatus('Failed to copy all links', 'error');
+        }
+    } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+        showStatus('Failed to copy all links', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+// Export to CSV
+function exportToCSV() {
+    if (currentData.length === 0) return showStatus('No data to export', 'error');
+    
+    let csvContent = "Receipt No.,Sales Type,Survey Model,Generated Link\n";
+    currentData.forEach(row => {
+        csvContent += `"${row.receiptNo}","${row.salesType}","${row.surveyModel}","${row.link}"\n`;
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "survey_links.csv");
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showStatus('CSV exported successfully!', 'success');
+}
+
+// Clear all data
+function clearData() {
+    currentData = [];
+    document.querySelector('#linkTable tbody').innerHTML = '';
+    document.getElementById('fileInput').value = '';
+    document.getElementById('fileName').textContent = 'No file chosen';
+    document.getElementById('copyAllBtn').disabled = true;
+    document.getElementById('exportBtn').disabled = true;
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('status').style.display = 'none';
+}
+
+// Show status message
+function showStatus(message, type) {
+    const statusEl = document.getElementById('status');
+    statusEl.textContent = message;
+    statusEl.className = `status ${type}`;
+    statusEl.style.display = 'block';
+}
+
+// Enable generate button when file is selected and show file name
+document.getElementById('fileInput').addEventListener('change', function() {
+    const fileName = this.files.length > 0 ? this.files[0].name : 'No file chosen';
+    document.getElementById('fileName').textContent = fileName;
+    document.getElementById('generateBtn').disabled = !this.files.length;
+});
+</script>
 </body>
 </html>
